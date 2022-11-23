@@ -1,0 +1,23 @@
+{
+  "name": "download-image",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cemre-2187/download-image.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cemre-2187/download-image/issues"
+  },
+  "homepage": "https://github.com/cemre-2187/download-image#readme",
+  "dependencies": {
+    "axios": "^1.2.0",
+    "pg": "^8.8.0"
+  }
+}
