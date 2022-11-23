@@ -2,8 +2,11 @@ const fs = require('fs');
 const axios = require('axios')
 const { Pool, Client } = require('pg')
 const connectionString = 'postgresql://postgres:    @localhost:5432/sample'
+let errors = []
 
-let imageUrls = ["https://www.yenitoptanci.com/uploads/UrunResimleri/buyuk/peri-led-isik-5-metre-sari-pilli-aydinla-8505.jpg"]
+var cron = require('node-cron');
+
+
 
 const client = new Client({
   connectionString,
@@ -16,32 +19,38 @@ const getImages = async () => {
 }
 
 
-async function downloadImage() {
-  let images = await getImages()
-  console.log(images[0])
 
-  images.map(async (item) => {
-    let filepath = item.image.replace("https://www.yenitoptanci.com/uploads/UrunResimleri/buyuk/", "./images/")
-    let url = item.image
+
+let index = 0
+let images = []
+cron.schedule('*/1 * * * * *', async () => {
+  console.log("first", index)
+  if (images.length === 0) {
+    images = await getImages()
+  } else if (index < images.length) {
+    let filepath = images[index].image.replace("https://www.yenitoptanci.com/uploads/UrunResimleri/buyuk/", "./images/")
+    let url = images[index].image
     try {
       const response = await axios({
         url,
         method: 'GET',
         responseType: 'stream'
       });
+      index++
       return new Promise((resolve, reject) => {
         response.data.pipe(fs.createWriteStream(filepath))
           .on('error', reject)
           .once('close', () => resolve(filepath));
       });
     } catch (error) {
-      console.log("axios")
-
+      console.log("axios", url)
+      errors.push(url)
+      index++
+    }
+    if (index == images.length - 2) {
+      console.log(errors, errors.length)
     }
 
+  }
 
-
-  })
-
-}
-downloadImage()
+});
